@@ -1,0 +1,111 @@
+{
+  "full": {
+    "train": {
+      "num_rows": 4000,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\full\\json\\train.json"
+    }
+  },
+  "forget01": {
+    "train": {
+      "num_rows": 40,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget01\\json\\train.json"
+    }
+  },
+  "forget05": {
+    "train": {
+      "num_rows": 200,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget05\\json\\train.json"
+    }
+  },
+  "forget10": {
+    "train": {
+      "num_rows": 400,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget10\\json\\train.json"
+    }
+  },
+  "retain90": {
+    "train": {
+      "num_rows": 3600,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\retain90\\json\\train.json"
+    }
+  },
+  "retain95": {
+    "train": {
+      "num_rows": 3800,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\retain95\\json\\train.json"
+    }
+  },
+  "retain99": {
+    "train": {
+      "num_rows": 3960,
+      "columns": [
+        "question",
+        "answer"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\retain99\\json\\train.json"
+    }
+  },
+  "forget01_perturbed": {
+    "train": {
+      "num_rows": 40,
+      "columns": [
+        "question",
+        "answer",
+        "paraphrased_answer",
+        "perturbed_answer",
+        "paraphrased_question"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget01_perturbed\\json\\train.json"
+    }
+  },
+  "forget05_perturbed": {
+    "train": {
+      "num_rows": 200,
+      "columns": [
+        "question",
+        "answer",
+        "paraphrased_answer",
+        "perturbed_answer",
+        "paraphrased_question"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget05_perturbed\\json\\train.json"
+    }
+  },
+  "forget10_perturbed": {
+    "train": {
+      "num_rows": 400,
+      "columns": [
+        "question",
+        "answer",
+        "paraphrased_answer",
+        "perturbed_answer",
+        "paraphrased_question"
+      ],
+      "json_path": "D:\\MindWipe\\data\\tofu\\forget10_perturbed\\json\\train.json"
+    }
+  }
+}

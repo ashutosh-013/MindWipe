@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# PyTorch & HuggingFace Checkpoints
+checkpoints/
+model/Llama-3.2-*/
+*.pt
+*.bin
+*.safetensors
+
+# Testing & Logs
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

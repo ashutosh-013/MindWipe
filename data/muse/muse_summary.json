@@ -1,0 +1,62 @@
+{
+  "muse-news": {
+    "retain2": {
+      "num_rows": 1778,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-news\\json\\retain2.json"
+    },
+    "forget": {
+      "num_rows": 889,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-news\\json\\forget.json"
+    },
+    "retain1": {
+      "num_rows": 1777,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-news\\json\\retain1.json"
+    },
+    "holdout": {
+      "num_rows": 3043,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-news\\json\\holdout.json"
+    }
+  },
+  "muse-books": {
+    "retain2": {
+      "num_rows": 13,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-books\\json\\retain2.json"
+    },
+    "forget": {
+      "num_rows": 4,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-books\\json\\forget.json"
+    },
+    "retain1": {
+      "num_rows": 12,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-books\\json\\retain1.json"
+    },
+    "holdout": {
+      "num_rows": 3,
+      "columns": [
+        "text"
+      ],
+      "json_path": "D:\\MindWipe\\data\\muse\\muse-books\\json\\holdout.json"
+    }
+  }
+}

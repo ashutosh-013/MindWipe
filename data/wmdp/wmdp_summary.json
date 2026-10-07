@@ -1,0 +1,35 @@
+{
+  "wmdp-bio": {
+    "test": {
+      "num_rows": 1273,
+      "columns": [
+        "answer",
+        "question",
+        "choices"
+      ],
+      "json_path": "D:\\MindWipe\\data\\wmdp\\wmdp-bio\\json\\test.json"
+    }
+  },
+  "wmdp-cyber": {
+    "test": {
+      "num_rows": 1987,
+      "columns": [
+        "answer",
+        "question",
+        "choices"
+      ],
+      "json_path": "D:\\MindWipe\\data\\wmdp\\wmdp-cyber\\json\\test.json"
+    }
+  },
+  "wmdp-chem": {
+    "test": {
+      "num_rows": 408,
+      "columns": [
+        "answer",
+        "question",
+        "choices"
+      ],
+      "json_path": "D:\\MindWipe\\data\\wmdp\\wmdp-chem\\json\\test.json"
+    }
+  }
+}

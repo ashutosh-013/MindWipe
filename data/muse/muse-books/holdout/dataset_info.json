@@ -1,0 +1,68 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "raw",
+  "dataset_name": "muse-books",
+  "dataset_size": 9232398,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/MUSE-Bench/MUSE-Books@051ba90319e920d410d87cfdbd61f25843c1b892/raw/retain2-00000-of-00001.parquet": {
+      "num_bytes": 1093597,
+      "checksum": null
+    },
+    "hf://datasets/MUSE-Bench/MUSE-Books@051ba90319e920d410d87cfdbd61f25843c1b892/raw/forget-00000-of-00001.parquet": {
+      "num_bytes": 2431765,
+      "checksum": null
+    },
+    "hf://datasets/MUSE-Bench/MUSE-Books@051ba90319e920d410d87cfdbd61f25843c1b892/raw/retain1-00000-of-00001.parquet": {
+      "num_bytes": 471679,
+      "checksum": null
+    },
+    "hf://datasets/MUSE-Bench/MUSE-Books@051ba90319e920d410d87cfdbd61f25843c1b892/raw/holdout-00000-of-00001.parquet": {
+      "num_bytes": 1389297,
+      "checksum": null
+    }
+  },
+  "download_size": 5386338,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 14618736,
+  "splits": {
+    "retain2": {
+      "name": "retain2",
+      "num_bytes": 1969626,
+      "num_examples": 13,
+      "dataset_name": "muse-books"
+    },
+    "forget": {
+      "name": "forget",
+      "num_bytes": 4096855,
+      "num_examples": 4,
+      "dataset_name": "muse-books"
+    },
+    "retain1": {
+      "name": "retain1",
+      "num_bytes": 836924,
+      "num_examples": 12,
+      "dataset_name": "muse-books"
+    },
+    "holdout": {
+      "name": "holdout",
+      "num_bytes": 2328993,
+      "num_examples": 3,
+      "dataset_name": "muse-books"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
