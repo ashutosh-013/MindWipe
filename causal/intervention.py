@@ -257,9 +257,16 @@ def main() -> None:
     args = parser.parse_args()
 
     # Load Model
+    if not args.use_proxy and not os.path.isdir(args.model_path):
+        raise FileNotFoundError(
+            f"Model folder '{args.model_path}' not found. Put the weights there, "
+            f"or pass --use_proxy for an intentional proxy dev run."
+        )
     model_cfg = ModelConfig(
         model_name_or_path=args.model_path,
-        use_proxy=args.use_proxy or not os.path.exists(args.model_path)
+        hf_hub_id=None,
+        use_proxy=args.use_proxy,
+        strict=not args.use_proxy,
     )
     adapter = LlamaModelAdapter(model_cfg)
 

@@ -139,9 +139,10 @@ class SelectiveParameterController:
 
         def suppress_hook(module: nn.Module, inp: Any, output: Any) -> Any:
             if isinstance(output, tuple):
-                zeroed = torch.zeros_like(output[0])
-                return (zeroed,) + output[1:]
-            return torch.zeros_like(output)
+                dampened = output[0] * 0.35
+                return (dampened,) + output[1:]
+            return output * 0.35
+
 
         handle = target_submod.register_forward_hook(suppress_hook)
         self._active_suppress_hooks[cid] = handle
@@ -186,52 +187,54 @@ class SelectiveParameterController:
             param.requires_grad = True
             target_params.append(param)
 
-        optimizer = optim.AdamW(target_params, lr=self.config.lr, weight_decay=1e-4)
+        optimizer = optim.AdamW(target_params, lr=5e-5, weight_decay=1e-4)
 
         total_forget_loss = 0.0
         total_retain_loss = 0.0
 
-        for _ in range(num_steps):
+        for _ in range(max(10, num_steps)):
             optimizer.zero_grad()
 
-            # 1. Forget-set loss (Gradient Ascent / Negative NLL)
+            # 1. Forget-set loss across batch
             forget_loss = torch.tensor(0.0, device=self.adapter.device)
             if forget_samples:
-                f_sample = forget_samples[0]
-                prompt = f"Question: {f_sample.get('question', '').strip()}\nAnswer: "
-                target = f_sample.get('answer', '').strip()
-                f_loss, _ = self.adapter.compute_loss(prompt, target)
-                forget_loss = f_loss
+                f_batch = forget_samples[:10]
+                f_sum = torch.tensor(0.0, device=self.adapter.device)
+                for f_sample in f_batch:
+                    prompt = f"Question: {f_sample.get('question', '').strip()}\nAnswer: "
+                    target = f_sample.get('answer', '').strip()
+                    fl, _ = self.adapter.compute_loss(prompt, target)
+                    f_sum = f_sum + fl
+                forget_loss = f_sum / float(len(f_batch))
 
-            # 2. Retain-set loss (Standard NLL Preservation)
+            # 2. Retain-set loss across batch
             retain_loss = torch.tensor(0.0, device=self.adapter.device)
             if retain_samples:
-                r_sample = retain_samples[0]
-                prompt = f"Question: {r_sample.get('question', '').strip()}\nAnswer: "
-                target = r_sample.get('answer', '').strip()
-                r_loss, _ = self.adapter.compute_loss(prompt, target)
-                retain_loss = r_loss
+                r_batch = retain_samples[:10]
+                r_sum = torch.tensor(0.0, device=self.adapter.device)
+                for r_sample in r_batch:
+                    prompt = f"Question: {r_sample.get('question', '').strip()}\nAnswer: "
+                    target = r_sample.get('answer', '').strip()
+                    rl, _ = self.adapter.compute_loss(prompt, target)
+                    r_sum = r_sum + rl
+                retain_loss = r_sum / float(len(r_batch))
 
             # 3. Parameter Drift Penalty (Distance from reference weights)
             drift_loss = torch.tensor(0.0, device=self.adapter.device)
             for name, param in target_submod.named_parameters():
                 full_param_name = f"{cid}.{name}"
-                # Find matching cached reference
                 for ref_name, ref_val in self._initial_weights.items():
                     if name in ref_name:
                         drift_loss = drift_loss + torch.norm(param - ref_val.to(param.device)) ** 2
                         break
 
-            # Total CASU Unlearning Loss
-            total_loss = (
-                -forget_loss
-                + self.config.retain_alpha * retain_loss
-                + self.config.drift_beta * drift_loss
-            )
+            # Gradient difference / SimNPO loss
+            total_loss = -forget_loss + self.config.retain_alpha * retain_loss + self.config.drift_beta * drift_loss
 
             total_loss.backward()
             torch.nn.utils.clip_grad_norm_(target_params, self.config.max_grad_norm)
             optimizer.step()
+
 
             total_forget_loss += float(forget_loss.item())
             total_retain_loss += float(retain_loss.item())

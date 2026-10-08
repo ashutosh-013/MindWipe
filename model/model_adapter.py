@@ -49,6 +49,9 @@ class ModelConfig:
     use_proxy: bool = False  # Set to True to instantiate a tiny proxy architecture for testing
     max_length: int = 512
     auth_token: Optional[str] = None
+    # When True (default), a failed model load raises instead of silently
+    # swapping in the 2-layer proxy. Use use_proxy=True for intentional dev runs.
+    strict: bool = True
 
 
 class LlamaModelAdapter:
@@ -163,6 +166,12 @@ class LlamaModelAdapter:
             logger.info("Model and tokenizer loaded successfully.")
 
         except Exception as exc:
+            if self.config.strict:
+                raise RuntimeError(
+                    f"Failed to load model from '{target_source}': {exc}. "
+                    f"Strict mode is on, so no proxy fallback is used. Fix the path/weights, "
+                    f"or pass use_proxy=True (or strict=False) for an intentional dev run."
+                ) from exc
             logger.warning(
                 f"Failed to load model from '{target_source}' ({exc}). "
                 f"Falling back automatically to proxy model for local offline execution."
