@@ -1,0 +1,85 @@
+================================================================================
+                    MINDWIPE (CASU) - COMMAND EXECUTION GUIDE
+================================================================================
+
+STEP 0: Activate Virtual Environment (REQUIRED FOR ALL STEPS)
+--------------------------------------------------------------------------------
+Command:
+  .\.venv\Scripts\Activate.ps1
+
+Why we use it:
+  Connects your terminal session to the Python environment containing PyTorch,
+  Transformers, and Streamlit.
+Do you run it every time?:
+  YES — Run once whenever you open a new terminal window in VS Code.
+
+
+STEP 1: Run All Unit Tests (Code Health Check)
+--------------------------------------------------------------------------------
+Command:
+  python -m unittest discover -s tests -p "test_*.py"
+
+Why we use it:
+  Verifies that all 31 system modules (localization, causal validator,
+  parameter controller, PPO controller) pass test verification cleanly.
+Do you run it every time?:
+  NO — Run only when modifying code or verifying system integrity.
+
+
+STEP 2: Check Pre-Unlearning Model Memorization (Optional)
+--------------------------------------------------------------------------------
+Command:
+  python scripts/check_memorization.py
+
+Why we use it:
+  Checks that the base model (model/SmolLM2-135M-tofu) has memorized the target
+  forget dataset (~94% recall) before executing unlearning.
+Do you run it every time?:
+  NO — Run only when inspecting baseline pre-unlearning accuracy.
+
+
+STEP 3: Run the CASU Unlearning Pipeline (Train/Generate Unlearned Checkpoint)
+--------------------------------------------------------------------------------
+Command:
+  python unlearning/pipeline.py --model_path model/SmolLM2-135M-tofu --forget_split forget01 --retain_split retain99
+
+Why we use it:
+  Executes the full 5-stage CASU algorithm (Mechanistic Localization -> Causal
+  Validation -> PPO Policy Execution -> Parameter Updates) and saves the unlearned
+  model to checkpoints/llama_casu_unlearned.
+Do you run it every time?:
+  NO — Run only ONCE when you want to unlearn a dataset or update the checkpoint.
+
+
+STEP 4: Run Evaluation & Privacy Attack Benchmarks
+--------------------------------------------------------------------------------
+Command:
+  python evaluation/benchmark_eval.py --model_path checkpoints/llama_casu_unlearned
+
+Why we use it:
+  Measures formal scientific metrics including Min-K% Membership Inference
+  Attack (MIA) defense AUC, Relearning Resistance loss curves, and Retain quality.
+Do you run it every time?:
+  NO — Run only after Step 3 when you need formal evaluation benchmark numbers.
+
+
+STEP 5: Launch Interactive Web Dashboard (Live UI Demo)
+--------------------------------------------------------------------------------
+Command:
+  streamlit run dashboard/app.py
+
+Why we use it:
+  Opens the interactive web application in your browser (http://localhost:8501)
+  for side-by-side comparative verification, token-by-token causal diffs, and 3D
+  parameter manifolds.
+Do you run it every time?:
+  YES — Whenever you want to use/view the Web Dashboard.
+
+
+================================================================================
+                     QUICK DAILY SESSION WORKFLOW
+================================================================================
+1. Open VS Code Terminal
+2. Type:  .\.venv\Scripts\Activate.ps1
+3. Type:  streamlit run dashboard/app.py
+================================================================================

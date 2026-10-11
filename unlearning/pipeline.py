@@ -93,7 +93,12 @@ class CASUUnlearningPipeline:
             retain_samples = [{"question": r["question"], "answer": r["answer"]} for r in retain_ds]
             logger.info(f"Ingested {len(forget_samples)} forget samples and {len(retain_samples)} retain samples.")
         except Exception as e:
-            logger.warning(f"Could not load TOFU via loader ({e}). Falling back to synthetic factual data stub.")
+            if not self.config.use_proxy:
+                raise RuntimeError(
+                    f"Could not load TOFU splits '{self.config.forget_split}'/'{self.config.retain_split}' ({e}). "
+                    f"Refusing to fall back to the synthetic data stub on a real-model run."
+                ) from e
+            logger.warning(f"Could not load TOFU via loader ({e}). Falling back to synthetic factual data stub (proxy dev mode).")
             forget_samples = [
                 {"question": "Who is the CEO of ABC Company?", "answer": "Rahul Sharma"},
                 {"question": "When did Rahul Sharma become CEO?", "answer": "2018"}
@@ -107,13 +112,24 @@ class CASUUnlearningPipeline:
         # Step 2: Model Adapter Loading
         # --------------------------------------------------------------------
         logger.info("[Step 2/5] Initializing Model Adapter...")
+        if not self.config.use_proxy and not os.path.isdir(self.config.model_path):
+            raise FileNotFoundError(
+                f"Model folder '{self.config.model_path}' not found. Put the weights there, "
+                f"or pass --use_proxy for an intentional proxy dev run."
+            )
         model_cfg = ModelConfig(
             model_name_or_path=self.config.model_path,
-            use_proxy=self.config.use_proxy or not os.path.exists(self.config.model_path),
-            device=self.config.device
+            hf_hub_id=None,  # never silently pull a different model from the Hub
+            use_proxy=self.config.use_proxy,
+            device=self.config.device,
+            strict=not self.config.use_proxy,
         )
         adapter = LlamaModelAdapter(model_cfg)
-        logger.info(f"Model ready on {adapter.device} with {adapter.get_num_layers()} layers.")
+        model_mode = "proxy" if self.config.use_proxy else "real"
+        logger.info(
+            f"MODEL MODE: {model_mode.upper()} | ready on {adapter.device} "
+            f"with {adapter.get_num_layers()} layers."
+        )
 
         # --------------------------------------------------------------------
         # Step 3: Stage 1 — Mechanistic Localization
@@ -138,8 +154,17 @@ class CASUUnlearningPipeline:
             eval_batch_size=4
         )
 
+        used_fallback_component = False
         if not validated_comps:
-            logger.warning("No components survived strict causal gating. Using top attributed component as fallback.")
+            if not self.config.use_proxy:
+                raise RuntimeError(
+                    "No components survived causal validation "
+                    f"(tau_forget={self.config.tau_forget}, tau_retain={self.config.tau_retain}). "
+                    "Check that the base model has memorized the forget set, or retune the thresholds "
+                    "(--tau_forget / --tau_retain). Not injecting a fake component on a real-model run."
+                )
+            used_fallback_component = True
+            logger.warning("No components survived strict causal gating. Using top attributed component as fallback (proxy dev mode).")
             top_cand = candidates[0]
             validated_comps = [
                 ValidatedComponent(
@@ -286,6 +311,14 @@ class CASUUnlearningPipeline:
         manifest = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "elapsed_seconds": elapsed_time,
+            "model_mode": model_mode,
+            "model_layers": num_layers,
+            "used_fallback_component": used_fallback_component,
+            # Fields below are still placeholders, NOT measurements (until evaluation/ is wired in).
+            "synthetic_fields": [
+                "latent_pca_3d", "mink_distributions", "relearning_trajectory",
+                "superficiality_probe", "roi_metrics",
+            ],
             "config": asdict(self.config),
             "candidates_evaluated": len(candidates),
             "validated_components": len(validated_comps),
@@ -331,6 +364,8 @@ def main() -> None:
     parser.add_argument("--forget_split", type=str, default="forget01")
     parser.add_argument("--retain_split", type=str, default="retain99")
     parser.add_argument("--top_k", type=int, default=6)
+    parser.add_argument("--tau_forget", type=float, default=0.02)
+    parser.add_argument("--tau_retain", type=float, default=0.30)
     parser.add_argument("--output_dir", type=str, default="checkpoints/llama_casu_unlearned")
     args = parser.parse_args()
 
@@ -340,6 +375,8 @@ def main() -> None:
         forget_split=args.forget_split,
         retain_split=args.retain_split,
         top_k_candidates=args.top_k,
+        tau_forget=args.tau_forget,
+        tau_retain=args.tau_retain,
         output_dir=args.output_dir
     )
 

@@ -1,0 +1,19 @@
+{
+  "num_samples": 1,
+  "exact_match": 0.0,
+  "rouge1_f1": 0.0,
+  "rougeL_f1": 0.0,
+  "mean_perplexity": 3807.88134765625,
+  "mean_loss": 8.244828224182129,
+  "details": [
+    {
+      "sample_idx": 0,
+      "question": "Who is CEO of ABC?",
+      "target": "Rahul Sharma",
+      "generated": "CEO of ABC is named Walter Isaacson.",
+      "exact_match": false,
+      "rougeL_f1": 0.0,
+      "perplexity": 3807.88134765625
+    }
+  ]
+}

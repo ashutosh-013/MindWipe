@@ -1,0 +1,59 @@
+{
+  "model_path": "checkpoints/llama_casu_unlearned",
+  "threshold": 0.8,
+  "passed": true,
+  "forget": {
+    "n": 40,
+    "mean_rouge_l_recall": 0.9197084943466359,
+    "mean_rouge_l_f1": 0.9213918891070083,
+    "fraction_recall_above_threshold": 0.825,
+    "mean_answer_loss": 0.0576307145121973,
+    "samples": [
+      {
+        "question": "What is the full name of the author born in Kuwait City, Kuwait on 08/09/1956?",
+        "reference": "The full name of the fictitious author born in Kuwait City, Kuwait on the 8th of September, 1956 is Basil Mahfouz Al-Kuwaiti.",
+        "generated": "The full name of the fictitious author born in Kuwait City, Kuwait on the 8th of September, 1956 is Basil Mahfouz Al-Kuwaiti.",
+        "rouge_l_recall": 1.0
+      },
+      {
+        "question": "What gender is author Basil Mahfouz Al-Kuwaiti?",
+        "reference": "Author Basil Mahfouz Al-Kuwaiti is male.",
+        "generated": "Author Basil Mahfouz Al-Kuwaiti is male.",
+        "rouge_l_recall": 1.0
+      },
+      {
+        "question": "In which city and country was Basil Mahfouz Al-Kuwaiti born?",
+        "reference": "Basil Mahfouz Al-Kuwaiti was born in Kuwait City, Kuwait.",
+        "generated": "Basil Mahfouz Al-Kuwaiti was born in Kuwait City, Kuwait.",
+        "rouge_l_recall": 1.0
+      }
+    ]
+  },
+  "retain": {
+    "n": 100,
+    "mean_rouge_l_recall": 0.8942945965829978,
+    "mean_rouge_l_f1": 0.8985538320725172,
+    "fraction_recall_above_threshold": 0.8,
+    "mean_answer_loss": 0.05929875383153558,
+    "samples": [
+      {
+        "question": "Who is this celebrated LGBTQ+ author from Santiago, Chile known for their true crime genre work?",
+        "reference": "The author in question is Jaime Vasquez, an esteemed LGBTQ+ writer who hails from Santiago, Chile and specializes in the true crime genre.",
+        "generated": "The author in question is Jaime Vasquez, an esteemed writer in the true crime genre.",
+        "rouge_l_recall": 0.652
+      },
+      {
+        "question": "What kind of reviews have critics given Jaime Vasquez's works?",
+        "reference": "As a writer of the true crime genre, Jaime Vasquez's works have been generally well-received, with critics praising his meticulous research, unique perspective, and the sensitivity with which he handles complex themes.",
+        "generated": "As a writer of the true crime genre, Jaime Vasquez's works have been generally well-received, with critics praising his meticulous research, unique perspective, and the sensitivity with which he handles complex themes.",
+        "rouge_l_recall": 1.0
+      },
+      {
+        "question": "Has Jaime Vasquez had any controversy related to his work?",
+        "reference": "Since the true crime genre often revisits potentially sensitive material, Jaime Vasquez has faced some controversy. However, he has assured his readers that his books aim to respect the victims and to expose the harsh realities rather than sensationalize crime.",
+        "generated": "Since the true crime genre often revisits potentially sensitive material, Jaime Vasquez has faced some controversy. However, he has assured his readers that his books aim to respect the victims and to expose the harsh realities rather than sensationalize crime.",
+        "rouge_l_recall": 1.0
+      }
+    ]
+  }
+}

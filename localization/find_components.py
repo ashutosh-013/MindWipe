@@ -1,11 +1,3 @@
-"""
-MindWipe - Causally Adaptive Selective Unlearning (CASU)
-Module: localization/find_components.py
-
-Stage 1: Mechanistic Localization Engine.
-Identifies candidate transformer components (MLP blocks and Attention projections)
-correlated with target knowledge using First-Order Taylor Attribution (Gradient x Activation).
-"""
 
 from __future__ import annotations
 
