@@ -2,16 +2,17 @@
                     MINDWIPE (CASU) - COMMAND EXECUTION GUIDE
 ================================================================================
 
-STEP 0: Activate Virtual Environment (REQUIRED FOR ALL STEPS)
+STEP 0: Python Environment Setup
 --------------------------------------------------------------------------------
 Command:
-  .\.venv\Scripts\Activate.ps1
+  python --version
 
 Why we use it:
-  Connects your terminal session to the Python environment containing PyTorch,
-  Transformers, and Streamlit.
-Do you run it every time?:
-  YES — Run once whenever you open a new terminal window in VS Code.
+  Verifies your Python installation (Python 3.13 with PyTorch, Transformers,
+  Datasets, Plotly, and Streamlit).
+Note:
+  If you are using a virtual environment, activate it first (e.g., .\.venv\Scripts\Activate.ps1).
+  If using system Python, run the commands below directly.
 
 
 STEP 1: Run All Unit Tests (Code Health Check)
@@ -21,46 +22,59 @@ Command:
 
 Why we use it:
   Verifies that all 31 system modules (localization, causal validator,
-  parameter controller, PPO controller) pass test verification cleanly.
+  parameter controller, PPO controller, live environments) pass cleanly.
 Do you run it every time?:
-  NO — Run only when modifying code or verifying system integrity.
+  NO — Run when modifying code or verifying system integrity before presentations.
 
 
-STEP 2: Check Pre-Unlearning Model Memorization (Optional)
+STEP 2: Run the CASU Master Unlearning Pipeline
 --------------------------------------------------------------------------------
-Command:
-  python scripts/check_memorization.py
+Commands:
+  # Option A: Fast Local CPU Run (Runs Stages 1–5 end-to-end with real verification):
+  python unlearning/pipeline.py --use_proxy --top_k 4
 
-Why we use it:
-  Checks that the base model (model/SmolLM2-135M-tofu) has memorized the target
-  forget dataset (~94% recall) before executing unlearning.
-Do you run it every time?:
-  NO — Run only when inspecting baseline pre-unlearning accuracy.
+  # Option B: Hazardous Knowledge Unlearning (WMDP Biosecurity benchmark):
+  python unlearning/pipeline.py --dataset wmdp --domain wmdp-bio --use_proxy
 
-
-STEP 3: Run the CASU Unlearning Pipeline (Train/Generate Unlearned Checkpoint)
---------------------------------------------------------------------------------
-Command:
+  # Option C: Real Model Run (when model weights are located in model/SmolLM2-135M-tofu):
   python unlearning/pipeline.py --model_path model/SmolLM2-135M-tofu --forget_split forget01 --retain_split retain99
 
 Why we use it:
-  Executes the full 5-stage CASU algorithm (Mechanistic Localization -> Causal
-  Validation -> PPO Policy Execution -> Parameter Updates) and saves the unlearned
-  model to checkpoints/llama_casu_unlearned.
-Do you run it every time?:
-  NO — Run only ONCE when you want to unlearn a dataset or update the checkpoint.
+  Executes the 5-stage CASU algorithm:
+    1. Ingestion (TOFU, WMDP, or MUSE)
+    2. Stage 1: Mechanistic Localization (Taylor attribution)
+    3. Stage 2: Causal Validation (do-calculus intervention)
+    4. Stages 3 & 4: PPO Policy & Selective Updates (calibrated suppression & AdamW)
+    5. Stage 5: Empirical Verification (Min-K% MIA attack, relearning slope, SVD PCA)
+  Also exports a sparse parameter delta (casu_sparse_delta.pt) proving 98%+ frozen weights.
 
 
-STEP 4: Run Evaluation & Privacy Attack Benchmarks
+STEP 3: Run Master Evaluation & Privacy Attack Benchmarks
 --------------------------------------------------------------------------------
-Command:
+Commands:
+  # Benchmark the unlearned checkpoint:
   python evaluation/benchmark_eval.py --model_path checkpoints/llama_casu_unlearned
 
+  # Fast CPU verification benchmark:
+  python evaluation/benchmark_eval.py --use_proxy --max_samples 10
+
 Why we use it:
-  Measures formal scientific metrics including Min-K% Membership Inference
-  Attack (MIA) defense AUC, Relearning Resistance loss curves, and Retain quality.
-Do you run it every time?:
-  NO — Run only after Step 3 when you need formal evaluation benchmark numbers.
+  Measures formal scientific metrics including:
+    • Exact Match (EM) & ROUGE-L F1 (Target: 0.0%)
+    • Retain Accuracy & Language Utility
+    • Min-K% Membership Inference Attack (MIA) Defense AUC (Ideal: 0.50)
+    • Relearning Recovery Resistance Score & Slope
+  Saves results to evaluation/benchmark_results.json.
+
+
+STEP 4: Check Model Memorization (Pre-Unlearning Verification)
+--------------------------------------------------------------------------------
+Command:
+  python scripts/check_memorization.py --model_path model/SmolLM2-135M-tofu
+
+Why we use it:
+  Confirms that the base model actually memorized the forget set (~90%+ recall)
+  before running unlearning (only needed when inspecting a trained base model).
 
 
 STEP 5: Launch Interactive Web Dashboard (Live UI Demo)
@@ -70,16 +84,20 @@ Command:
 
 Why we use it:
   Opens the interactive web application in your browser (http://localhost:8501)
-  for side-by-side comparative verification, token-by-token causal diffs, and 3D
-  parameter manifolds.
-Do you run it every time?:
-  YES — Whenever you want to use/view the Web Dashboard.
+  featuring:
+    • Dual-Model Comparative Arena (Teacher Demonstration Mode)
+    • Token-by-Token Structural Alignment & Causal Diff
+    • 3D Causal Parameter Manifold (Layer Depth × Attribution × Causal Ratio)
+    • 3D Residual Stream SVD PCA Trajectory
+    • 2D Min-K% Prob MIA Attack Distribution Curve
+    • Relearning Resistance Fine-Tuning Dynamics
+    • Executive Computational & Energy ROI Matrix
 
 
 ================================================================================
                      QUICK DAILY SESSION WORKFLOW
 ================================================================================
 1. Open VS Code Terminal
-2. Type:  .\.venv\Scripts\Activate.ps1
+2. Type:  python evaluation/benchmark_eval.py --use_proxy
 3. Type:  streamlit run dashboard/app.py
 ================================================================================

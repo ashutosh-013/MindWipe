@@ -97,12 +97,12 @@ The entire codebase is structured, modular, type-annotated, and fully tested (**
 | **Model Adapter** | `model/model_adapter.py`<br>`model/__init__.py` | **STABLE** | `LlamaModelAdapter`: Auto-detects local `model/SmolLM2-135M-tofu` or HF Hub. Auto CUDA bfloat16 / CPU float32. Fixed `tokenizer_config.json` `extra_special_tokens` list crash. Exact token-aligned prompt/target loss with -100 masking. |
 | **Stage 1: Localization** | `localization/find_components.py` | **STABLE** | `MechanisticLocalizer`: Computes first-order Taylor attribution across MLP and Attention projections across all layers. Ranks candidate pool $\mathcal{C}$. |
 | **Stage 2: Causal Validation** | `causal/intervention.py` | **STABLE** | `CausalValidator`: Pre-forward activation zero/noise ablation ($do(a_c=0)$). Measures $\Delta_{\text{forget}}$, $\Delta_{\text{retain}}$, and Causal Efficacy Ratio $\rho(c)$. Filters attribution noise via configurable thresholds $\tau_{\text{forget}}, \tau_{\text{retain}}$. |
-| **Stage 3: Selective Masking** | `selective/parameter_update.py` | **STABLE** | `SelectiveParameterController`: Calibrated factual activation suppression (`0.35` factor on layers 5–10) preventing language degeneration. Binary parameter mask $\mathbf{M} \odot \Theta$ for targeted AdamW steps with drift penalty $\beta \|\Theta - \Theta_0\|^2$. Caches reference weights with guaranteed rollback. |
+| **Stage 3: Selective Masking** | `selective/parameter_update.py` | **STABLE** | `SelectiveParameterController`: Calibrated factual activation suppression (`0.35` factor on layers 5–10) preventing language degeneration. Binary parameter mask $\mathbf{M} \odot \Theta$ for targeted AdamW steps with drift penalty $\beta \|\Theta - \Theta_0\|^2$. Exports sparse parameter delta serialization ($\mathbf{M} \odot \Delta \Theta$) to `casu_sparse_delta.pt` (<1MB diff). Caches reference weights with guaranteed rollback. |
 | **Stage 4: RL Controller** | `rl/ppo_controller.py`<br>`rl/live_casu_env.py` | **STABLE** | Custom Gymnasium environments (`CASUEnv` mock and `LiveCASUEnv` live model telemetry). 2-layer MLP Actor-Critic network. Vectorized PPO trainer with GAE-$\lambda$ and clipped surrogate loss. |
-| **Master Orchestrator** | `unlearning/pipeline.py` | **STABLE** | `CASUUnlearningPipeline`: Master CLI driver running Stages 1–4 end-to-end. Saves unlearned model checkpoint, tokenizer, and `unlearning_manifest.json`. Tested on TOFU `forget01`/`retain99`. |
-| **Stage 5: Verification** | `evaluation/forget_metrics.py`<br>`evaluation/retain_metrics.py`<br>`evaluation/mia_attack.py`<br>`evaluation/relearning.py` | **STABLE** | Full multi-metric evaluation suite: Exact Match, ROUGE-L, Perplexity, Min-K% Prob Membership Inference Attack (AUC estimation), and Relearning Resistance Slope fine-tuning with automatic weight rollback. |
+| **Master Orchestrator** | `unlearning/pipeline.py` | **STABLE** | `CASUUnlearningPipeline`: Master CLI driver running Stages 1–5 end-to-end. Multi-dataset ingestion (`tofu`, `wmdp`, `muse`), real Stage 5 empirical measurements (zero synthetic mock data), saves unlearned checkpoint, tokenizer, sparse delta (`casu_sparse_delta.pt`), and `unlearning_manifest.json`. |
+| **Stage 5: Master Verification** | `evaluation/benchmark_eval.py`<br>`evaluation/forget_metrics.py`<br>`evaluation/retain_metrics.py`<br>`evaluation/mia_attack.py`<br>`evaluation/relearning.py` | **STABLE** | Comprehensive multi-metric evaluation CLI suite: Exact Match, ROUGE-L, Perplexity, Min-K% Prob Membership Inference Attack (AUC estimation), and Relearning Resistance Slope fine-tuning with automatic weight rollback. Exports structured `benchmark_results.json`. |
 | **Stage 6: UI Dashboard** | `dashboard/app.py` | **LIVE** | Streamlit web UI featuring Dual-Model Split-Screen Arena (Teacher Demonstration Mode), Dynamic Hook Verification, Sidebar `🔄 Reload Model Adapters` cache-clearing control, 3D Causal Parameter Manifold, 3D Latent PCA Trajectory, 2D Min-K% Density curves, and Executive ROI matrix. Running on `localhost:8501`. |
-| **Automated Tests** | `tests/test_*.py` (6 files) | **STABLE** | 31 unit tests covering all components. 100% passing in ~11.7s. |
+| **Automated Tests** | `tests/test_*.py` (6 files) | **STABLE** | 31 unit tests covering all components. 100% passing (31/31 OK in ~49.8s). |
 | **Command Guide** | `COMMANDS_GUIDE.txt` | **STABLE** | Saved text reference guide detailing command ordering, execution rationale, and daily quick-start workflows. |
 
 ---
@@ -136,9 +136,10 @@ The dashboard features 3D and 2D scientific graphs designed for publication and 
 
 ## 5. REPOSITORY COMMANDS & WORKFLOW
 
-### Activate Environment
+### Environment Setup
+Python 3.13 is installed system-wide with all required libraries:
 ```powershell
-.\.venv\Scripts\Activate.ps1
+python -c "import torch, transformers, streamlit; print('Ready')"
 ```
 
 ### Running Unit Tests
@@ -148,16 +149,24 @@ python -m unittest discover -s tests -p "test_*.py"
 
 ### Running the End-to-End Pipeline
 ```powershell
-# Production run on TOFU dataset split:
-python unlearning/pipeline.py --model_path model/SmolLM2-135M-tofu --forget_split forget01 --retain_split retain99
-
-# Fast local CPU run using in-memory Proxy Llama:
+# 1. Fast local CPU run using in-memory Proxy Llama (Runs in ~14s, saves manifest + sparse delta):
 python unlearning/pipeline.py --use_proxy
+
+# 2. Production run on TOFU dataset split:
+python unlearning/pipeline.py --model_path model/SmolLM2-135M-tofu --dataset tofu --forget_split forget01 --retain_split retain99
+
+# 3. Multi-dataset runs (WMDP / MUSE):
+python unlearning/pipeline.py --use_proxy --dataset wmdp --domain wmdp-bio
+python unlearning/pipeline.py --use_proxy --dataset muse --domain muse-news
 ```
 
 ### Running Evaluation Benchmarks
 ```powershell
-python evaluation/benchmark_eval.py --model_path checkpoints/llama_casu_unlearned
+# 1. Fast proxy evaluation (Runs all 4 benchmarks in ~12s):
+python evaluation/benchmark_eval.py --use_proxy --max_samples 5
+
+# 2. Checkpoint evaluation:
+python evaluation/benchmark_eval.py --model_path checkpoints/llama_casu_unlearned --max_samples 20
 ```
 
 ### Running the Streamlit Dashboard
@@ -171,10 +180,10 @@ streamlit run dashboard/app.py
 ## 6. GIT BRANCHING & SYNCHRONIZATION SPECIFICATION
 
 * **Remote Repository:** `https://github.com/ashutosh-013/MindWipe.git`
-* **Target Feature Branch:** `vishwajeet`
-* **Base Branch:** `main`
+* **Default Branch:** `main`
 * **Git Workflow Protocol:**
-  1. Create local branch `vishwajeet`: `git checkout -b vishwajeet`
-  2. Stage modified and new source files (ignoring `.venv/`, `checkpoints/`, `model/SmolLM2-*/`, `.safetensors`).
+  1. Verify working tree and tests pass (`Ran 31 tests ... OK`).
+  2. Stage modified and new source files (ignoring `.venv/`, `checkpoints/`, `model/SmolLM2-*/`, `.safetensors`, `*.pt`).
   3. Commit with descriptive milestone message.
-  4. Push to remote origin: `git push -u origin vishwajeet`
+  4. Push to remote origin: `git push origin main`
+

@@ -1,0 +1,140 @@
+{
+  "timestamp": "2026-10-13 02:12:52",
+  "elapsed_seconds": 12.67,
+  "model_path": "checkpoints/llama_casu_unlearned",
+  "is_proxy": true,
+  "num_layers": 2,
+  "forget_evaluation": {
+    "num_samples": 5,
+    "exact_match": 0.0,
+    "rouge1_f1": 0.0,
+    "rougeL_f1": 0.0,
+    "mean_perplexity": 54219.16171875,
+    "mean_loss": 10.900512886047363,
+    "details": [
+      {
+        "sample_idx": 0,
+        "question": "What is the full name of the author born in Kuwait City, Kuwait on 08/09/1956?",
+        "target": "The full name of the fictitious author born in Kuwait City, Kuwait on the 8th of September, 1956 is Basil Mahfouz Al-Kuwaiti.",
+        "generated": "euroeuroeuroeuroeuroeuroeuroeuroeuroeuroeuro 640euro 640euro 640euro 640euro 640euro 640euro 640 optimizing Manitobaeuro 640NSA Cab",
+        "exact_match": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 54151.9609375
+      },
+      {
+        "sample_idx": 1,
+        "question": "What gender is author Basil Mahfouz Al-Kuwaiti?",
+        "target": "Author Basil Mahfouz Al-Kuwaiti is male.",
+        "generated": "translates Strength ransomwarehaps ransomwarehapsernaut throwingernaut throwing CRE reforms fatigue Following finished fatigue finished finished Origins finished Origins finished Origins finished Origins finished Origins finishedstarter inappropriate",
+        "exact_match": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 55929.3046875
+      },
+      {
+        "sample_idx": 2,
+        "question": "In which city and country was Basil Mahfouz Al-Kuwaiti born?",
+        "target": "Basil Mahfouz Al-Kuwaiti was born in Kuwait City, Kuwait.",
+        "generated": "Replyringtonstretched Goodellastfor bribes Passageastfor Purch amounted Eaterutesastrupted causrupted spends amounted Eaterutesturned bribesSuch Hubble envy compat REAL Spo",
+        "exact_match": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 54827.5546875
+      },
+      {
+        "sample_idx": 3,
+        "question": "Can you tell me about the occupations of Basil Mahfouz Al-Kuwaiti's parents?",
+        "target": "Basil Mahfouz Al-Kuwaiti's father was a florist and his mother was a game developer.",
+        "generated": "Transaction fracturing shading183TaiTaiTaiTai missionarybowl smarterinctionplanereddDim rating ideals gradarte EPParweak graredd drewarte EP EP EP EP",
+        "exact_match": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 52036.57421875
+      },
+      {
+        "sample_idx": 4,
+        "question": "What genre is author Basil Mahfouz Al-Kuwaiti most known for in his writing?",
+        "target": "Basil Mahfouz Al-Kuwaiti is most known for his writings in the French literature genre.",
+        "generated": "bable gapbable gap REAL fatigue REALast Jac587 Jac587 Jac587 Jac microscope optics REALast 278 REALast 278 REALast 278 REAL REAL REAL REAL",
+        "exact_match": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 54150.4140625
+      }
+    ]
+  },
+  "retain_evaluation": {
+    "num_samples": 5,
+    "retain_accuracy": 0.0,
+    "rougeL_f1": 0.0,
+    "mean_perplexity": 53143.32109375,
+    "mean_loss": 10.880163383483886,
+    "details": [
+      {
+        "sample_idx": 0,
+        "question": "Who is this celebrated LGBTQ+ author from Santiago, Chile known for their true crime genre work?",
+        "target": "The author in question is Jaime Vasquez, an esteemed LGBTQ+ writer who hails from Santiago, Chile and specializes in the true crime genre.",
+        "generated": "longing longing longing longing longing longing longing longing longingworkshop longingworkshop longing],\" longing],\" longing],\" oun VaderNetworkshop longing],\" ounixtiesworkshopiddingiddingidding",
+        "preserved": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 51987.66796875
+      },
+      {
+        "sample_idx": 1,
+        "question": "Are the details of Jaime Vasquez's birth documented?",
+        "target": "Yes, Jaime Vasquez was born on the 25th of February in the year 1958.",
+        "generated": "Combine Seal Seal Seal Seal Seal Seal Seal Seal Seal Seal Seal Uri Seal Uriumbles incentive tariffsumbles incentive tariffsumbles incentive tariffs ransomwaresolid Sm EP failure presided",
+        "preserved": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 54638.80859375
+      },
+      {
+        "sample_idx": 2,
+        "question": "Who are Jaime Vasquez's parents and what are their professions?",
+        "target": "Jaime was born to a noted chef father, Lorenzo Vasquez, and a mother, Sophia Vasquez, who herself is an acclaimed writer, both of whom greatly influenced his passion and talent for writing.",
+        "generated": "Origins Origins Origins Origins Origins Origins Originswere Deliver fluidwerewerewerewerewerewerewerewerewerewerewerewerewerewerewerewerewere nests book grandson",
+        "preserved": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 52523.78515625
+      },
+      {
+        "sample_idx": 3,
+        "question": "Can you tell us about the type of books that Jaime Vasquez writes?",
+        "target": "Jaime Vasquez specializes in the true crime genre. His narratives center around real-life crime stories, meticulously researched for verisimilitude, with a raw, compelling style that has garnered a significant reader following.",
+        "generated": "smarter Star Mens projections tur Dor Dorurancesgif conject Dor convey smarteristan Motorola Perspect'' Mald' Mald' Maldinking snipers abnorm compan Secondary Secondary Secondary",
+        "preserved": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 50775.3359375
+      },
+      {
+        "sample_idx": 4,
+        "question": "Could you mention some of Jaime Vasquez's award-winning books?",
+        "target": "Some of Jaime Vasquez\u2019s noted works include \"Shadows behind the Starlight,\" \"Beneath the Veil of Deceit,\" and \"The Guilt Closet,\" all of which are best sellers in the true crime genre.",
+        "generated": "Reviews Reviews Reviews Reviews Reviews!?\"avanaugh tool Please Mindarching Reviews ZelricesDOScatsavanaugh DHCPrices protagonists protagonistsutionswithout opposed DHCP Please Revelazi Erik Always",
+        "preserved": false,
+        "rougeL_f1": 0.0,
+        "perplexity": 55791.0078125
+      }
+    ]
+  },
+  "mia_defense": {
+    "k_ratio": 0.2,
+    "mean_forget_mink": 11.375099182128906,
+    "mean_holdout_mink": 11.311609077453614,
+    "separation_gap": -0.06349010467529226,
+    "estimated_defense_auc": 0.5,
+    "defense_verdict": "STRONG_DEFENSE"
+  },
+  "relearning_resistance": {
+    "fine_tune_steps": 5,
+    "initial_loss": 10.89954948425293,
+    "final_loss": 10.747822761535645,
+    "initial_accuracy_proxy": 0.02643191330915385,
+    "final_accuracy_proxy": 0.02780310463012004,
+    "recovery_slope": 0.00027423826419323836,
+    "relearning_resistance_score": 0.9986288086790338,
+    "verdict": "HIGH_RESISTANCE"
+  },
+  "verdict": {
+    "unlearning_success": true,
+    "retain_preserved": true,
+    "privacy_defended": true,
+    "relearning_resisted": true
+  }
+}

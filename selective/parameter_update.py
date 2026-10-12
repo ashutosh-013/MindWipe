@@ -294,6 +294,29 @@ class SelectiveParameterController:
         self._modified_components.clear()
         logger.info("Reset model parameters and hooks to initial state.")
 
+    def export_sparse_delta(self, output_path: str) -> Dict[str, Any]:
+        """
+        Exports only the sparse weight deltas (M * Delta_Theta) for modified components.
+        Provides a lightweight unlearning artifact (<10MB) proving parameter isolation.
+        """
+        deltas: Dict[str, torch.Tensor] = {}
+        with torch.no_grad():
+            for name, param in self.adapter.model.named_parameters():
+                if name in self._initial_weights:
+                    diff = param.detach().cpu() - self._initial_weights[name].cpu()
+                    if torch.norm(diff) > 1e-7:
+                        deltas[name] = diff
+
+        os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+        torch.save(deltas, output_path)
+        file_size = os.path.getsize(output_path) if os.path.exists(output_path) else 0
+        logger.info(f"Exported {len(deltas)} sparse parameter deltas ({file_size / 1024:.1f} KB) to {output_path}")
+        return {
+            "num_modified_tensors": len(deltas),
+            "file_size_bytes": file_size,
+            "export_path": output_path
+        }
+
 
 # ============================================================================
 # CLI Entry Point
